@@ -1,4 +1,4 @@
-// Reemplaza a server.cjs en Vercel: guarda el estado compartido en Upstash Redis.
+// Función de Vercel: guarda el estado compartido en Upstash Redis.
 const URL_ = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 const KEY = 'sla-dashboard-state';
@@ -15,7 +15,7 @@ async function redis(command) {
 
 const validRow = (r) => r && typeof r.id === 'string' && typeof r.client === 'string';
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
 
   if (!URL_ || !TOKEN) {
@@ -48,4 +48,4 @@ module.exports = async (req, res) => {
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
-};
+}
