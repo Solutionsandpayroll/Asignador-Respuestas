@@ -1,0 +1,27 @@
+{
+  "name": "sla-dashboard-react",
+  "version": "1.0.0",
+  "description": "Seguimiento de clientes por estado y SLA, Solutions & Payroll",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "server": "node server.cjs --port=3001",
+    "client": "vite",
+    "dev": "concurrently -n api,web -c blue,green \"npm:server\" \"npm:client\"",
+    "build": "vite build",
+    "start": "node server.cjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.3",
+    "concurrently": "^9.0.1",
+    "vite": "^5.4.10"
+  }
+}
