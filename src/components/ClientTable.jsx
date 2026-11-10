@@ -47,6 +47,7 @@ function Row({ row, sla, onChange, onDelete }) {
     onSave={(v) => onChange(row.id, 'channel', v)}
   />
 </td>
+
       <td>
         <select id={`replied-${row.id}`} aria-label="Respuesta" value={row.replied} onChange={set('replied')}>
           <Options list={REPLIES} />
