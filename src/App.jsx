@@ -161,6 +161,23 @@ export default function App() {
     }
   };
 
+  // Quita el archivo cargado: vacía la tabla para todo el equipo y vuelve al estado inicial.
+  const removeFile = () => {
+    const total = data.rows.length;
+    if (
+      !window.confirm(
+        `Se va a quitar el archivo cargado y vaciar la tabla (${total} clientes) para todo el equipo. Esta acción no se puede deshacer. ¿Quieres continuar?`
+      )
+    ) {
+      return;
+    }
+    setFilter('all');
+    setOwner('');
+    setQ('');
+    setUpload({ busy: false, error: '' });
+    commit({ ...data, rows: [], source: 'vacio', note: '' });
+  };
+
   /* ---------- derivados ---------- */
   const owners = useMemo(
     () => (data ? [...new Set(data.rows.map((r) => r.owner).filter(Boolean))].sort() : []),
@@ -199,6 +216,11 @@ export default function App() {
               if (f) handleFile(f);
             }}
           />
+          {data.source === 'excel' && (
+            <button type="button" onClick={removeFile}>
+              Quitar archivo
+            </button>
+          )}
           <button type="button" onClick={addRow}>
             Agregar cliente
           </button>
