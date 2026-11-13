@@ -25,6 +25,7 @@ export default function App() {
   const [q, setQ] = useState('');
   const [saveMsg, setSaveMsg] = useState({ text: '', bad: false });
   const [upload, setUpload] = useState({ busy: false, error: '' });
+  const [showHelp, setShowHelp] = useState(false);
 
   const dataRef = useRef(null); // último estado, para guardar y comparar versiones
   const pending = useRef(false); // hay un guardado en curso o programado
@@ -68,6 +69,16 @@ export default function App() {
     }, POLL_MS);
     return () => clearInterval(id);
   }, []);
+
+  /* ---------- cerrar la ayuda con Escape ---------- */
+  useEffect(() => {
+    if (!showHelp) return undefined;
+    const onKey = (e) => {
+      if (e.key === 'Escape') setShowHelp(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [showHelp]);
 
   /* ---------- guardado ---------- */
   const scheduleSave = useCallback(() => {
@@ -227,8 +238,54 @@ export default function App() {
           <button type="button" onClick={() => downloadExcel(data.rows)}>
             Descargar Excel
           </button>
+          <button type="button" onClick={() => setShowHelp((v) => !v)} aria-expanded={showHelp}>
+            {showHelp ? 'Cerrar ayuda' : '¿Cómo se usa?'}
+          </button>
         </div>
       </header>
+
+      {showHelp && (
+        <section className="help" aria-label="Cómo se usa">
+          <div className="help-head">
+            <h2>¿Cómo se usa?</h2>
+            <button type="button" onClick={() => setShowHelp(false)}>
+              Cerrar
+            </button>
+          </div>
+          <ol>
+            <li>
+              <b>Cargar Excel:</b> pulsa «Cargar Excel» y elige un archivo <code>.xlsx</code>. Esto reemplaza toda la
+              tabla actual, por eso te pedirá confirmación si ya hay clientes.
+            </li>
+            <li>
+              <b>Agregar cliente:</b> pulsa «Agregar cliente». Aparece una fila vacía arriba de la tabla con el cursor
+              en el nombre.
+            </li>
+            <li>
+              <b>Editar:</b> escribe directamente en las casillas (estado, último contacto, responsable, respuesta,
+              canal y notas). Todo se guarda solo y se comparte con el equipo.
+            </li>
+            <li>
+              <b>Filtrar:</b> pulsa una tarjeta de estado para ver solo esos clientes. También puedes buscar por texto
+              y filtrar por responsable.
+            </li>
+            <li>
+              <b>Días de SLA:</b> cambia el número de días en los filtros para definir cuánto tiempo se espera una
+              respuesta antes de marcarla como atrasada.
+            </li>
+            <li>
+              <b>Borrar:</b> usa el botón de borrar de la fila. Se borra para todo el equipo.
+            </li>
+            <li>
+              <b>Descargar Excel:</b> exporta la tabla tal como está en este momento.
+            </li>
+            <li>
+              <b>Quitar archivo:</b> vacía la tabla para todo el equipo. No se puede deshacer.
+            </li>
+          </ol>
+          <p className="help-note">La tabla se actualiza sola cada 10 segundos con los cambios de tus compañeros.</p>
+        </section>
+      )}
 
       <UploadBar source={data.source} note={data.note} busy={upload.busy} error={upload.error} onFile={handleFile} />
       <Kpis rows={data.rows} sla={data.sla} filter={filter} onFilter={setFilter} />
